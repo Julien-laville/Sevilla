@@ -1,0 +1,364 @@
+<style type="text/css">
+    TABLE {
+    border:1px solid black;
+    padding:0;
+    margin:0;
+    border-collapse: collapse;transform: rotateX(60deg) rotateY(0deg)
+rotateZ(-45deg);
+}
+
+
+  @keyframes blink {
+    0% {
+           background-color: rgba(255,0,0,1)
+    }
+    50% {
+           background-color: rgba(255,0,0,0.5)
+    }
+    100% {
+           background-color: rgba(255,0,0,1)
+    }
+}
+@-webkit-keyframes blink {
+    0% {
+           background-color: rgba(255,0,0,1)
+    }
+    50% {
+           background-color: rgba(255,0,0,0.5)
+    }
+    100% {
+           background-color: rgba(255,0,0,1)
+    }
+}
+
+ .blin {
+    animation:blink normal 1.5s infinite ease-in-out;
+}
+
+
+TD {
+    height:40px;
+    width:40px;
+    border:1px solid #223344;
+    font-size : 12px;
+    text-align: center
+}
+
+TD:hover {
+    background:#ecedef;
+}
+
+#tools {
+    position: absolute;
+    top:0;
+}
+
+</style>
+
+
+<div id="p"></div>
+<div id="tools">
+
+    <div onclick='setF("INSERT")'>in</div>
+    <div  onclick='setF("END")'>out</div>
+    <div  onclick='setF("TRAP")'>trap</div>
+    <div  onclick='setF("IDDLE")'>leave</div>
+
+</div>
+
+<script>
+var table = "<table>"
+
+flag = 'INSERT'
+var start = false;
+var end = false
+var traps = []
+var pathes = []
+var tempPathes = []
+var tempLast = null
+var last = false
+var dir = null
+var go = null
+var forbidden = false
+
+
+
+
+for(var i = 0; i < 20; i ++){
+    var line = []
+    for(var j = 0; j < 30; j ++) {
+
+        line.push(`<td onmouseover="play(this)"
+onclick="caseclick(this)" id="td_${i}_${j}">${i} ${j}</td>`)
+
+    }
+    table += '<tr>'+line.join('\n')+'</tr>'
+
+}
+
+function setF(f) {
+    flag = f
+    ready()
+}
+
+function caseclick(i) {
+    var cases = i.id.split('_')
+    var x = cases[1]
+    var y = cases[2]
+
+    if(flag === 'INSERT') {
+        if(start) {
+            var old = document.getElementById(start);
+            old.style.background = "#ffffff"
+        }
+        start = i.id 
+        last = start+""
+        i.style.background = "red"
+    } else if(flag === 'END') {
+        if(end) {
+            var old = document.getElementById(end);
+            old.style.background = "#ffffff"
+        }
+        end = i.id 
+        i.style.background = "green"
+    } else if(flag === 'TRAP') {
+        end = i.id 
+        traps.push(i.id )
+        i.style.background = "yellow"
+    } else if(flag === 'IDDLE') {
+        playS(i)
+
+
+    } else if(flag === 'PLAY') {
+
+        playC(i)
+    }
+}
+
+
+    function ready() {
+        if(last) {
+            var x0 = parseInt(last.split('_')[1])
+            var y0 = parseInt(last.split('_')[2])
+            if(document.getElementById('td_' + (x0+1) + '_' + y0))
+            document.getElementById('td_' + (x0+1) + '_' +
+y0).className = "blin"
+            if(document.getElementById('td_' + (x0-1) + '_' + y0))
+            document.getElementById('td_' + (x0-1) + '_' +
+y0).className = "blin"
+            if(document.getElementById('td_' + x0 + '_' + (y0+1)))
+            document.getElementById('td_' + x0 + '_' +
+(y0+1)).className = "blin"
+            if(document.getElementById('td_' + x0 + '_' + (y0-1)))
+            document.getElementById('td_' + x0 + '_' +
+(y0-1)).className = "blin"
+        }
+    }
+
+function playS(i) {
+    var x = parseInt(i.id.split("_")[1])
+    var y = parseInt(i.id.split("_")[2])
+
+
+    var lastx = parseInt(last.split("_")[1])
+    var lasty = parseInt(last.split("_")[2])
+
+    if(lastx == x) dir = 'h'
+    else dir = 'v'
+
+    if((lastx == x+1 && lasty == y) ||
+       (lastx == x-1 && lasty == y) ||
+       (lastx == x && lasty == y+1) ||
+       (lastx == x && lasty == y-1)) {
+             go = i.id 
+            flag = 'PLAY'
+    } else {
+        console.log("cant start")
+    }
+
+}
+
+
+function play(i) {
+    if(flag !== 'PLAY') return;
+
+        tempPathes.forEach(function(tp) {
+            document.getElementById(tp).style.background = "#fff"
+
+        })
+        var x = parseInt(i.id.split("_")[1])
+        var y = parseInt(i.id.split("_")[2])
+
+        var ox = parseInt(go.split("_")[1])
+        var oy = parseInt(go.split("_")[2])
+        var dx = x - ox
+        var dy = y - oy
+
+
+
+
+        var lg = Math.max(Math.abs(dx),Math.abs(dy))
+        if(lg <= 1) return
+
+        forbidden = false
+        tempPathes = []
+
+        for(var i = 0; i < lg; i ++) {
+            var id = ""
+            var id2 = ""
+            var x1 = -1
+            var x2 = -1
+            var y1 = -1
+            var y2 = -1
+            if(dir == 'v') {
+                if(dx < 0 && dy < 0) {
+                    x1 = ox - i - 1
+                    y1 = oy
+                    x2 = ox - lg
+                    y2 = oy - i
+                } else if(dx < 0 && dy >= 0) {
+                    x1 = ox - i
+                    y1 = oy
+                    x2 = ox - lg
+                    y2 = oy + i
+                } else if(dx >= 0 && dy < 0) {
+                    x1 = ox + i
+                    y1 = oy
+                    x2 = ox + lg
+                    y2 = oy - i
+                } else {
+                    x1 = ox + i
+                    y1 = oy
+                    x2 = ox + lg
+                    y2 = oy + i
+                }
+            } else {
+                 if(dx < 0 && dy < 0) {
+                    x1 = ox - i
+                    y1 = oy - lg
+                    x2 = ox
+                    y2 =oy -i
+                } else if(dx < 0 && dy >= 0) {
+                    x1 = ox - i
+                    y1 = oy + lg
+                    x2 = ox
+                    y2 = oy + i
+                } else if(dx >= 0 && dy < 0) {
+                    x1 = ox + i
+                    y1 = oy - lg
+                    x2 = ox
+                    y2 = oy - i
+                } else {
+                    x1 = ox + i
+                    y1 = oy + lg
+                    x2 = ox
+                    y2 = oy + i
+                }
+            }
+
+            if(x1 == -1 || x2 == -1 || y1 == -1 || y2 == -1) {
+                forbidden = true
+            }
+
+            id = "td_"+ x1 +"_" + y1
+            id2 = "td_"+ x2 +"_" + y2
+
+            traps.forEach(function(t) {
+                if(t === id || t === id2) {
+                    forbidden = true
+                }
+            })
+            /* cross the last */
+            if(last === id || last === id2) {
+                forbidden = true
+            }
+
+
+            if(x1 < 0 || x2 < 0 || x1>19 || x2>19
+              || y1 < 0 || y2 < 0 || y1>29 || y2>29) {
+                forbidden = true
+            }
+
+            try {
+                document.getElementById(id).style.background=color
+                tempPathes.push(id)
+            } catch(e) {
+                forbidden = true
+            }
+            try {
+                document.getElementById(id2).style.background=color
+                tempPathes.push(id2)
+            } catch(e) {
+                forbidden = true
+            }
+
+
+
+
+        }
+        var color = 'grey'
+        if(forbidden) {
+            color = 'pink'
+        }
+
+
+    if(!forbidden) {
+        if(dir == 'h')
+                tempLast = tempPathes[tempPathes.length - 2]
+            else
+                tempLast = tempPathes[tempPathes.length - 1]
+
+
+        tempPathes.forEach(function(tp) {
+            document.getElementById(tp).style.background=color
+        })
+
+
+        traps.forEach(function(t) {
+            document.getElementById(t).style.background="yellow"
+        })
+
+
+    }
+
+}
+
+
+var begin = false
+function playC() {
+    if(forbidden) return;
+
+    var lastx = parseInt(last.split("_")[1])
+    var lasty = parseInt(last.split("_")[2])
+    if(document.getElementById('td_' + (lastx+1) + '_' + lasty))
+    document.getElementById('td_' + (lastx+1) + '_' + lasty).className = ""
+    if(document.getElementById('td_' + (lastx-1) + '_' + lasty))
+    document.getElementById('td_' + (lastx-1) + '_' + lasty).className = ""
+    if(document.getElementById('td_' + lastx + '_' + (lasty+1)))
+    document.getElementById('td_' + lastx + '_' + (lasty+1)).className = ""
+    if(document.getElementById('td_' + lastx + '_' + (lasty-1)))
+    document.getElementById('td_' + lastx + '_' + (lasty-1)).className = ""
+
+
+    last = tempLast+""
+
+    if(last === end)
+        alert("Win !")
+    tempPathes.forEach(function(tp) {
+        document.getElementById(tp).style.background = "purple"
+    })
+    tempPathes = []
+    flag = 'IDDLE'
+    ready()
+}
+
+
+
+
+
+table += '</table>'
+p.innerHTML = table
+
+
+
+</script>
