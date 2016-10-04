@@ -63,6 +63,9 @@ TD:hover {
     <div  onclick='setF("END")'>out</div>
     <div  onclick='setF("TRAP")'>trap</div>
     <div  onclick='setF("IDDLE")'>leave</div>
+    
+    <div  onclick='setF("VOID")'>void</div>
+    <div  onclick='setF("RIVER")'>river</div>
 
 </div>
 
@@ -80,6 +83,10 @@ var last = false
 var dir = null
 var go = null
 var forbidden = false
+var isFisrt = true
+var pLength = -1;
+var rivers = [];
+    var onlyCloneCanCrossRiver = true
 
 
 
@@ -125,12 +132,19 @@ function caseclick(i) {
         end = i.id 
         traps.push(i.id )
         i.style.background = "yellow"
+        
+    } else if(flag === 'VOID') {
+        traps.push(i.id )
+       i.style.border = "none"
+       i.style.color = "#fff"
+    } else if(flag === 'RIVER'){
+        rivers.push(i.id )
+        i.style.border = "none"
+        i.style.background = "#d8f3ff"
+        i.style.color = "#d8f3ff"
     } else if(flag === 'IDDLE') {
         playS(i)
-
-
     } else if(flag === 'PLAY') {
-
         playC(i)
     }
 }
@@ -165,6 +179,48 @@ function playS(i) {
 
     if(lastx == x) dir = 'h'
     else dir = 'v'
+    
+    
+    if(!isFisrt) {
+        var tmpPath2 = []
+        if(x < lastx) { //^
+            for(var j = 0; j < pLength; j ++) {
+                tmpPath2.push('td_' + (x-j) + '_' + y)
+            }
+        } else if(x > lastx) { //<
+           for(var j = 0; j < pLength; j ++) {
+                tmpPath2.push('td_' + (x+j) + '_' + y)
+            }
+        } else if(y < lasty) { //v
+            for(var j = 0; j < pLength; j ++) {
+                tmpPath2.push('td_' + x + '_' + (y-j))
+            }
+            console.log("<")
+        } else if(y > lasty) { //^
+             for(var j = 0; j < pLength; j ++) {
+                tmpPath2.push('td_' + x + '_' + (y+j))
+            }
+        }
+
+       var forbidden = checkPath(tmpPath2)
+       var color = 'purple'
+        if(forbidden) {
+            color = 'pink'
+        } 
+       
+       tmpPath2.forEach(function(t2) {
+           document.getElementById(t2).style.background = color
+       })
+       
+        if(!forbidden) {
+            tempPathes = []
+            flag = 'IDDLE'
+            ready()
+        }
+    
+       
+        
+    }
 
     if((lastx == x+1 && lasty == y) ||
        (lastx == x-1 && lasty == y) ||
@@ -197,116 +253,101 @@ function play(i) {
 
 
 
-        var lg = Math.max(Math.abs(dx),Math.abs(dy))
+        var lg = Math.max(Math.abs(dx),Math.abs(dy)) + 1
         if(lg <= 1) return
+        
+        if(isFisrt) 
+            pLength = lg
+        else 
+            lg = pLength
 
         forbidden = false
         tempPathes = []
+        
 
-        for(var i = 0; i < lg; i ++) {
-            var id = ""
-            var id2 = ""
-            var x1 = -1
-            var x2 = -1
-            var y1 = -1
-            var y2 = -1
-            if(dir == 'v') {
-                if(dx < 0 && dy < 0) {
-                    x1 = ox - i - 1
-                    y1 = oy
-                    x2 = ox - lg
-                    y2 = oy - i
-                } else if(dx < 0 && dy >= 0) {
-                    x1 = ox - i
-                    y1 = oy
-                    x2 = ox - lg
-                    y2 = oy + i
-                } else if(dx >= 0 && dy < 0) {
-                    x1 = ox + i
-                    y1 = oy
-                    x2 = ox + lg
-                    y2 = oy - i
+             
+       
+            for(var i = 0; i < lg; i ++) {
+                var id = ""
+                var id2 = ""
+                var x1 = -1
+                var x2 = -1
+                var y1 = -1
+                var y2 = -1
+                if(dir == 'v') {
+                    if(dx < 0 && dy < 0) {
+                        x1 = ox - i - 1
+                        y1 = oy
+                        x2 = ox - lg
+                        y2 = oy - i
+                    } else if(dx < 0 && dy >= 0) {
+                        x1 = ox - i
+                        y1 = oy
+                        x2 = ox - lg
+                        y2 = oy + i
+                    } else if(dx >= 0 && dy < 0) {
+                        x1 = ox + i
+                        y1 = oy
+                        x2 = ox + lg
+                        y2 = oy - i
+                    } else {
+                        x1 = ox + i
+                        y1 = oy
+                        x2 = ox + lg
+                        y2 = oy + i
+                    }
                 } else {
-                    x1 = ox + i
-                    y1 = oy
-                    x2 = ox + lg
-                    y2 = oy + i
+                     if(dx < 0 && dy < 0) {
+                        x1 = ox - i
+                        y1 = oy - lg
+                        x2 = ox
+                        y2 =oy -i
+                    } else if(dx < 0 && dy >= 0) {
+                        x1 = ox - i
+                        y1 = oy + lg
+                        x2 = ox
+                        y2 = oy + i
+                    } else if(dx >= 0 && dy < 0) {
+                        x1 = ox + i
+                        y1 = oy - lg
+                        x2 = ox
+                        y2 = oy - i
+                    } else {
+                        x1 = ox + i
+                        y1 = oy + lg
+                        x2 = ox
+                        y2 = oy + i
+                    }
                 }
-            } else {
-                 if(dx < 0 && dy < 0) {
-                    x1 = ox - i
-                    y1 = oy - lg
-                    x2 = ox
-                    y2 =oy -i
-                } else if(dx < 0 && dy >= 0) {
-                    x1 = ox - i
-                    y1 = oy + lg
-                    x2 = ox
-                    y2 = oy + i
-                } else if(dx >= 0 && dy < 0) {
-                    x1 = ox + i
-                    y1 = oy - lg
-                    x2 = ox
-                    y2 = oy - i
-                } else {
-                    x1 = ox + i
-                    y1 = oy + lg
-                    x2 = ox
-                    y2 = oy + i
-                }
-            }
 
-            if(x1 == -1 || x2 == -1 || y1 == -1 || y2 == -1) {
-                forbidden = true
-            }
-
-            id = "td_"+ x1 +"_" + y1
-            id2 = "td_"+ x2 +"_" + y2
-
-            traps.forEach(function(t) {
-                if(t === id || t === id2) {
+                if(x1 == -1 || x2 == -1 || y1 == -1 || y2 == -1) {
                     forbidden = true
                 }
-            })
-            /* cross the last */
-            if(last === id || last === id2) {
-                forbidden = true
-            }
+                if(dir=="v") {
+                    id = "td_"+ x1 +"_" + y1
 
+                } else {
+                    id = "td_"+ x2 +"_" + y2
+                    x2 = x1
+                    y2 = y1 
+                }
 
-            if(x1 < 0 || x2 < 0 || x1>19 || x2>19
-              || y1 < 0 || y2 < 0 || y1>29 || y2>29) {
-                forbidden = true
-            }
+              tempPathes.push(id)
 
-            try {
-                document.getElementById(id).style.background=color
-                tempPathes.push(id)
-            } catch(e) {
-                forbidden = true
-            }
-            try {
-                document.getElementById(id2).style.background=color
-                tempPathes.push(id2)
-            } catch(e) {
-                forbidden = true
-            }
-
-
-
-
-        }
+            
+            
+        } 
+     forbidden = checkPath(tempPathes)
         var color = 'grey'
         if(forbidden) {
             color = 'pink'
-        }
+        } 
+    
 
 
     if(!forbidden) {
-        if(dir == 'h')
-                tempLast = tempPathes[tempPathes.length - 2]
-            else
-                tempLast = tempPathes[tempPathes.length - 1]
+        tempLast = tempPathes[tempPathes.length - 1]
+        
 
 
         tempPathes.forEach(function(tp) {
@@ -317,16 +358,61 @@ function play(i) {
         traps.forEach(function(t) {
             document.getElementById(t).style.background="yellow"
         })
+        if(end)
+            document.getElementById(end).style.background = "green"
 
 
     }
 
 }
+    
+    function checkPath(paths) {
+        var forbidden = false
+        paths.forEach(function(p) {
+            var x = p.split("_")[1]
+            var y = p.split("_")[2]
+            traps.forEach(function(t) {
+                if(t === p) {
+                    forbidden = true
+                }
+            })
+            /* cross the last */
+            if(last === p) {
+                forbidden = true
+            }
+
+
+            if(x < 0 ||x > 19 || 
+                y < 0 || y>29) {
+                forbidden = true
+            }
+
+            try {
+                document.getElementById(p).style.background
+            } catch(e) {
+                forbidden = true
+            }
+        })
+        return forbidden
+       
+    }
 
 
 var begin = false
-function playC() {
+function playC(i) {
+    
+    var x = parseInt(i.id.split("_")[1])
+    var y = parseInt(i.id.split("_")[2])
+
+    var lx = parseInt(last.split("_")[1])
+    var ly = parseInt(last.split("_")[2])
+    
+
+    
+    
+    
     if(forbidden) return;
+    isFisrt = !isFisrt
 
     var lastx = parseInt(last.split("_")[1])
     var lasty = parseInt(last.split("_")[2])
