@@ -66,6 +66,12 @@ TD:hover {
     
     <div  onclick='setF("VOID")'>void</div>
     <div  onclick='setF("RIVER")'>river</div>
+    
+    <p></p>
+    
+    <div  onclick='save()'>save</div>
+    <div  onclick='localStorage.clear()'>clean</div>
+    <div id="loadlist"></div>
 
 </div>
 
@@ -102,11 +108,51 @@ onclick="caseclick(this)" id="td_${i}_${j}">${i} ${j}</td>`)
     table += '<tr>'+line.join('\n')+'</tr>'
 
 }
+    
+    
+    function save(){
+        var map = {
+            start : start,
+            end: end,
+            traps:traps,
+            rivers:rivers
+        }
+        var rawMap = JSON.stringify(map)
+        localStorage.setItem("bob_"+new Date().getTime(),rawMap)
+    }
+    
+    function loadM(k) {
+        var rawMap = localStorage.getItem(k)
+        var map = JSON.parse(rawMap)
+        
+        start = map.start
+         document.getElementById(start).style.background = "red"
+        end = map.end
+         document.getElementById(end).style.background = "green"
+        rivers = map.rivers
+        rivers.forEach(function(river){
+            document.getElementById(river).style.background = "#d8f3ff"
+        })
+        traps = map.traps
+        traps.forEach(function(trap) {
+            document.getElementById(trap).style.background = "yellow"
+        })
+    }
 
-function setF(f) {
-    flag = f
-    ready()
-}
+    function setF(f) {
+        flag = f
+        ready()
+    }
+
+    var loadAll = function() {
+        var levels = []
+        for(var key in localStorage) {
+            if(key.indexOf('bob_') !== -1) {
+                levels.push('<div onclick=\'loadM(\"'+key+'"\)\'>load '+key+'</div>')
+            }
+        }
+        loadlist.innerHTML = levels.join('')
+    }()
 
 function caseclick(i) {
     var cases = i.id.split('_')
@@ -368,7 +414,7 @@ function play(i) {
     
     function checkPath(paths) {
         var forbidden = false
-        paths.forEach(function(p) {
+        paths.forEach(function(p,i) {
             var x = p.split("_")[1]
             var y = p.split("_")[2]
             traps.forEach(function(t) {
@@ -376,6 +422,15 @@ function play(i) {
                     forbidden = true
                 }
             })
+            
+            rivers.forEach(function(river) {
+                if(i != paths.length - 1) {
+                    if(river === p && (isFisrt && onlyCloneCanCrossRiver)) {
+                        forbidden = true
+                    }    
+                }
+            })
+            
             /* cross the last */
             if(last === p) {
                 forbidden = true
