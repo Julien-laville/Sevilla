@@ -68,6 +68,9 @@ TD:hover {
     <div  onclick='setF("RIVER")'>river</div>
     
     <p></p>
+        <div onclick='setF("TRIGGER")'></div>
+        <div onclick='setF("TRIGGER")'></div>
+    <p></p>
     
     <div  onclick='save()'>save</div>
     <div  onclick='localStorage.clear()'>clean</div>
@@ -92,7 +95,8 @@ var forbidden = false
 var isFisrt = true
 var pLength = -1;
 var rivers = [];
-    var onlyCloneCanCrossRiver = true
+var onlyCloneCanCrossRiver = true
+var triggerables = []
 
 
 
