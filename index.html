@@ -100,6 +100,7 @@ flag = 'INSERT'
 var start = false;
 var end = false
 var traps = []
+var voids = []
 var pathes = []
 var tempPathes = []
 var tempLast = null
@@ -132,14 +133,17 @@ onclick="caseclick(this)" id="td_${i}_${j}">${i} ${j}</td>`)
     
     
     function save(){
+        var saveName = prompt("Nom ? (a-zA-Z0-9)")
         var map = {
             start : start,
             end: end,
             traps:traps,
-            rivers:rivers
+            rivers:rivers,
+            voids:voids,
+            triggerables:triggerables
         }
         var rawMap = JSON.stringify(map)
-        localStorage.setItem("bob_"+new Date().getTime(),rawMap)
+        localStorage.setItem("bob_"+new Date().getTime()+"_"+saveName,rawMap)
     }
     
     function loadM(k) {
@@ -158,6 +162,30 @@ onclick="caseclick(this)" id="td_${i}_${j}">${i} ${j}</td>`)
         traps.forEach(function(trap) {
             document.getElementById(trap).style.background = "yellow"
         })
+        voids = map.voids
+        voids.forEach(function(v) {
+            document.getElementById(v).style.color = "#fff"
+            document.getElementById(v).style.border = "none"
+        })
+        triggerables = map.triggerables
+        triggerables.forEach(function(tr) {
+            
+            document.getElementById(tr.pos).style.background = "#ef6a9d"
+            document.getElementById(tr.pos).innerHTML = "T"
+            
+            tr.walls.forEach(function(w) {
+                document.getElementById(w).style.background = "#ef6a9d"
+                document.getElementById(w).innerHTML = "D"
+            })
+            
+            tr.links.forEach(function(l) {
+                document.getElementById(l).style.color = "#ef6a9d"
+                document.getElementById(l).innerHTML = "."
+            })
+            
+        })
+        
+        last = start+""
     }
 
     function setF(f) {
@@ -185,7 +213,7 @@ onclick="caseclick(this)" id="td_${i}_${j}">${i} ${j}</td>`)
         var levels = []
         for(var key in localStorage) {
             if(key.indexOf('bob_') !== -1) {
-                levels.push('<div onclick=\'loadM(\"'+key+'"\)\'>load '+key+'</div>')
+                levels.push('<div onclick=\'loadM(\"'+key+'"\)\'>load ' + key.split("_")[2] + '</div>')
             }
         }
         loadlist.innerHTML = levels.join('')
@@ -197,6 +225,7 @@ onclick="caseclick(this)" id="td_${i}_${j}">${i} ${j}</td>`)
             case 0: 
                 var isGuide = confirm("voulez-vous une visite guidee ?")
                 if(isGuide) guideStep = 1
+                else guideStep = 3
                 guide()
                 break
             case 1: 
@@ -206,6 +235,7 @@ onclick="caseclick(this)" id="td_${i}_${j}">${i} ${j}</td>`)
                 
                 var isAdvancedGuide = confirm("voulez-vous une visite guidee des fonctions avancees ?")
                 if(isAdvancedGuide) guideStep = 2
+                else guideStep = 3
                 guide()
                 break 
                 case 2:
@@ -278,7 +308,7 @@ function caseclick(i) {
         i.style.background = "yellow"
         
     } else if(flag === 'VOID') {
-        traps.push(i.id )
+        voids.push(i.id)
        i.style.border = "none"
        i.style.color = "#fff"
     } else if(flag === 'RIVER'){
@@ -498,6 +528,10 @@ function play(i) {
         traps.forEach(function(t) {
             document.getElementById(t).style.background="yellow"
         })
+        voids.forEach(function(v) {
+            document.getElementById(v).style.border="none"
+            document.getElementById(v).style.color="#fff"
+        })
         if(end)
             document.getElementById(end).style.background = "green"
 
@@ -517,9 +551,15 @@ function play(i) {
                 }
             })
             
+            voids.forEach(function(v) {
+                if(v === p) {
+                    forbidden = true
+                }
+            })
+            
             triggerables.forEach(function(t) {
                 t.walls.forEach(function(w,i) {
-                    if(t === p && !t.isOpen) {
+                    if(w === p && !t.isOpen) {
                         forbidden = true
                     }
                 })
