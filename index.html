@@ -52,7 +52,16 @@ TD:hover {
     position: absolute;
     top:0;
 }
-
+    .active {
+        color : greenyellow
+    }
+    #triggers {
+        position: absolute;
+        right: 0;
+        top:0;
+        text-align: right;
+    }
+    
 </style>
 
 
@@ -62,20 +71,23 @@ TD:hover {
     <div onclick='setF("INSERT")'>in</div>
     <div  onclick='setF("END")'>out</div>
     <div  onclick='setF("TRAP")'>trap</div>
-    <div  onclick='setF("IDDLE")'>leave</div>
+    <div  onclick='setF("IDDLE")'>play</div>
     
     <div  onclick='setF("VOID")'>void</div>
     <div  onclick='setF("RIVER")'>river</div>
     
     <p></p>
-        <div onclick='setF("TRIGGER")'></div>
-        <div onclick='setF("TRIGGER")'></div>
+        <div id="trigger" onclick='setF("TRIGGER")'>trigger</div>
     <p></p>
     
     <div  onclick='save()'>save</div>
     <div  onclick='localStorage.clear()'>clean</div>
     <div id="loadlist"></div>
 
+</div>
+
+<div id="triggers">
+    triggers
 </div>
 
 <script>
@@ -97,6 +109,7 @@ var pLength = -1;
 var rivers = [];
 var onlyCloneCanCrossRiver = true
 var triggerables = []
+var subFlag = "iddle"
 
 
 
@@ -144,6 +157,22 @@ onclick="caseclick(this)" id="td_${i}_${j}">${i} ${j}</td>`)
     }
 
     function setF(f) {
+        if(f === 'TRIGGER' && subFlag === "iddle") {
+            document.getElementById("trigger").innerHTML = "<span class='active'>trigger</span>"
+            subFlag = "trigger"
+        } else if(f === 'TRIGGER' && subFlag === "trigger") {
+            document.getElementById("trigger").innerHTML = "door"
+            subFlag = "door"
+        } else if(f === 'TRIGGER' && subFlag === "door") {
+            document.getElementById("trigger").innerHTML = "link"
+            subFlag = "links"
+        } else if(f === 'TRIGGER' && subFlag === "links") {
+            document.getElementById("trigger").innerHTML = "trigger"
+            subFlag = "iddle"            
+        } else if(f !== 'TRIGGER') {
+            document.getElementById("trigger").innerHTML = "trigger"
+            subFlag = "iddle"
+        }
         flag = f
         ready()
     }
@@ -178,7 +207,41 @@ function caseclick(i) {
         }
         end = i.id 
         i.style.background = "green"
-    } else if(flag === 'TRAP') {
+    } else if(flag === 'TRIGGER') {
+        if(subFlag == 'trigger') {
+            var t = {
+                pos : i.id,
+                walls : [],
+                links : [],
+                isOpen : false
+            }
+            triggerables.push(t)
+            document.getElementById("trigger").innerHTML = "door"
+            subFlag = "door"
+            
+            i.style.background = "#ef6a9d"
+            i.innerHTML = "T"
+
+        } else if(subFlag == 'door') {
+            var lastTr = triggerables[triggerables.length-1]
+            lastTr.walls.push(i.id)
+            
+            i.style.background = "#ef6a9d"
+            i.innerHTML = "D"
+        } else if(subFlag == 'links') {
+            var lastTr = triggerables[triggerables.length-1]
+            lastTr.links.push(i.id)
+            
+            i.style.color = "#ef6a9d"
+            i.innerHTML = "."
+        }
+        var tList = triggerables.map(function(t,i) {
+            return "<p>" + i + " " + t.walls.length + "</p>"
+        })
+        
+        document.getElementById("triggers").innerHTML = tList.join("")
+       
+    }  else if(flag === 'TRAP') {
         end = i.id 
         traps.push(i.id )
         i.style.background = "yellow"
@@ -424,6 +487,15 @@ function play(i) {
                 }
             })
             
+            triggerables.forEach(function(t) {
+                t.walls.forEach(function(w,i) {
+                    if(t === p && !t.isOpen) {
+                        forbidden = true
+                    }
+                })
+            })
+            
+            
             rivers.forEach(function(river) {
                 if(i != paths.length - 1) {
                     if(river === p && (isFisrt && onlyCloneCanCrossRiver)) {
@@ -486,6 +558,20 @@ function playC(i) {
 
     if(last === end)
         alert("Win !")
+        
+    triggerables.forEach(function(t){
+        if(last === t.pos) {
+            t.isOpen = true
+            document.getElementById(t.pos).style.background = "yellowgreen"
+            t.walls.forEach(function(w) {
+                document.getElementById(w).style.background = "yellowgreen"
+            })
+            t.links.forEach(function(w) {
+                document.getElementById(w).style.color = "yellowgreen"
+            })
+        }           
+    })
+        
     tempPathes.forEach(function(tp) {
         document.getElementById(tp).style.background = "purple"
     })
