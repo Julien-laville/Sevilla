@@ -30,6 +30,9 @@ rotateZ(-45deg);
            background-color: rgba(255,0,0,1)
     }
 }
+      body {
+          background : #f9efde
+    }
 
  .blin {
     animation:blink normal 1.5s infinite ease-in-out;
@@ -110,8 +113,9 @@ var rivers = [];
 var onlyCloneCanCrossRiver = true
 var triggerables = []
 var subFlag = "iddle"
+var guideStep = 0
 
-
+guide()
 
 
 for(var i = 0; i < 20; i ++){
@@ -186,6 +190,24 @@ onclick="caseclick(this)" id="td_${i}_${j}">${i} ${j}</td>`)
         }
         loadlist.innerHTML = levels.join('')
     }()
+    
+    
+    function guide() {
+        switch(guideStep) {
+            case 0: 
+                var isGuide = confirm("voulez-vous une visite guidee ?")
+                if(isGuide) guideStep = 1
+                break
+            case 1: 
+                alert("place un depart avec in")
+                alert("place une arrivee avec out")
+                alert("commence avec play")
+                
+                var isAdvancedGuide = confirm("voulez-vous une visite guidee des fonctions avancees ?")
+                if(isAdvancedGuide) guideStep = 2
+                break    
+        }
+    }
 
 function caseclick(i) {
     var cases = i.id.split('_')
@@ -325,8 +347,7 @@ function playS(i) {
         playC(document.getElementById(tempPathes[tempPathes.length-1]))
         return
        
-    }
-    
+    } 
    
     
        
@@ -541,6 +562,15 @@ function playC(i) {
     
     if(forbidden) return;
     isFisrt = !isFisrt
+    
+     if(isFisrt){
+        document.body.style.background = "#f9efde"
+     }else{
+        document.body.style.background = "#e0ffe6"
+
+
+    }
+    
 
     var lastx = parseInt(last.split("_")[1])
     var lasty = parseInt(last.split("_")[2])
