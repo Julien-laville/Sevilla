@@ -232,29 +232,31 @@ function playS(i) {
     
     
     if(!isFisrt) {
-        var tmpPath2 = []
+        var tempPathes2 = []
         if(x < lastx) { //^
             for(var j = 0; j < pLength; j ++) {
-                tempPathes.push('td_' + (x-j) + '_' + y)
+                tempPathes2.push('td_' + (x-j) + '_' + y)
             }
         } else if(x > lastx) { //<
            for(var j = 0; j < pLength; j ++) {
-                tempPathes.push('td_' + (x+j) + '_' + y)
+                tempPathes2.push('td_' + (x+j) + '_' + y)
             }
         } else if(y < lasty) { //v
             for(var j = 0; j < pLength; j ++) {
-                tempPathes.push('td_' + x + '_' + (y-j))
+                tempPathes2.push('td_' + x + '_' + (y-j))
             }
             console.log("<")
         } else if(y > lasty) { //^
              for(var j = 0; j < pLength; j ++) {
-                tempPathes.push('td_' + x + '_' + (y+j))
+                tempPathes2.push('td_' + x + '_' + (y+j))
             }
         }
         
         
-        var forbidden = checkPath(tempPathes)
+        var forbidden = checkPath(tempPathes2)
         if(forbidden)    return
+        
+        tempPathes = tempPathes2
         
         tempLast = tempPathes[tempPathes.length-1]
         playC(document.getElementById(tempPathes[tempPathes.length-1]))
