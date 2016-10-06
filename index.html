@@ -235,42 +235,37 @@ function playS(i) {
         var tmpPath2 = []
         if(x < lastx) { //^
             for(var j = 0; j < pLength; j ++) {
-                tmpPath2.push('td_' + (x-j) + '_' + y)
+                tempPathes.push('td_' + (x-j) + '_' + y)
             }
         } else if(x > lastx) { //<
            for(var j = 0; j < pLength; j ++) {
-                tmpPath2.push('td_' + (x+j) + '_' + y)
+                tempPathes.push('td_' + (x+j) + '_' + y)
             }
         } else if(y < lasty) { //v
             for(var j = 0; j < pLength; j ++) {
-                tmpPath2.push('td_' + x + '_' + (y-j))
+                tempPathes.push('td_' + x + '_' + (y-j))
             }
             console.log("<")
         } else if(y > lasty) { //^
              for(var j = 0; j < pLength; j ++) {
-                tmpPath2.push('td_' + x + '_' + (y+j))
+                tempPathes.push('td_' + x + '_' + (y+j))
             }
         }
-
-       var forbidden = checkPath(tmpPath2)
-       var color = 'purple'
-        if(forbidden) {
-            color = 'pink'
-        } 
+        
+        
+        var forbidden = checkPath(tempPathes)
+        if(forbidden)    return
+        
+        tempLast = tempPathes[tempPathes.length-1]
+        playC(document.getElementById(tempPathes[tempPathes.length-1]))
+        return
        
-       tmpPath2.forEach(function(t2) {
-           document.getElementById(t2).style.background = color
-       })
-       
-        if(!forbidden) {
-            tempPathes = []
-            flag = 'IDDLE'
-            ready()
-        }
+    }
+    
+   
     
        
         
-    }
 
     if((lastx == x+1 && lasty == y) ||
        (lastx == x-1 && lasty == y) ||
