@@ -300,7 +300,7 @@ function play(i) {
 
 
         var lg = Math.max(Math.abs(dx),Math.abs(dy)) + 1
-        if(lg <= 1) return
+        if(lg < 1) return
         
         if(isFisrt) 
             pLength = lg
