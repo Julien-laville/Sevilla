@@ -1,0 +1,30 @@
+<!doctype html>
+<head>
+    <link href="poc.css" type="text/css" rel="stylesheet">
+</head>
+<body>
+    <div id="top_bar">
+        <button onclick='setGameState("play")'>Play</button>
+        
+        <div id="step">0</div>
+    </div>
+    
+    <div id="editor">
+        <span id="editor_toggler">show</span>
+        <div id="start" onclick='setGameState("start")'>Start</div>
+        <div id="end" onclick='setGameState("end")'>Finish</div>
+        <div id="water" onclick='setGameState("water")'>Water</div>
+        <div id="trap" onclick='setGameState("trap")'>Trap</div>
+        <div id="trigger" onclick='setGameState("trigger")'>Trigger and Door</div>
+        
+        <hr>
+        <div id="editor_status">START</div>
+        <hr>
+        
+        <div id="save" class="save" onclick="save()">Save</div>
+        <div id="saves"></div>
+        
+    </div>
+    <div id="level_container"></div>
+    <script src="poc.js"></script>
+</body>
