@@ -1,8 +1,11 @@
+var LEVEL_WIDTH = 20;
+var LEVEL_HEIGHT = 20;
 window.onload = function() {
     showSaves()
     
-    init(20,20, "level");
+    init(LEVEL_WIDTH,LEVEL_HEIGHT, "level");
 }
+
 
 var gameStates = {
     "new" : "NEW",
@@ -20,56 +23,76 @@ var gameStates = {
 
 
 
-var isFirst = false;
+var isFirst = true;
 var lastPathLenth = 0;
 var gameState = gameStates.start;
 
 
 var level = {}
 
+function combine() {
+    
+}
+
 var bricks = {
     "preview" : {
+        type : 'preview',
         text : ".",
         style : "background:#222426;"
     },
     "default" : {
+        type : 'default',
         text : function(x,y) {return x+" , "+y},
         style : "background:#ef974d;"
     },
     "trap" : {
+        type : 'trap',
         text : function(x,y) {return x+" , "+y},
         style : "background:#a3e1bc;"
     },
     "void" : {
+        type : 'void',
         text : function(x,y) {return ''},
         style : "background:#fff;border:none;"
     },
     "water" : {
+        type : 'water',
         text : function(x,y) {return ''},
         style : "background:#8acda2;"
     },
     "path" : {
+        type : 'path',
         text : function(x,y) {return x+" , "+y},
         style : "background:#8acda2;"
     },
     "door" : {
+        type : 'door',
         text : function(x,y) {return "D"},
         style : "background:#8acda2;"
     },
     "trigger" : {
+        type : 'trigger',
         text : function(x,y) {return "T"},
         style : "background:#8acda2;"
     },
     "link" : {
+        type : 'link',
         text : function(x,y) {return "."},
         style : "background:#8acda2;"
     },
     "start" : {
+        type : 'start',
         text : function(x,y) {return "S"},
         style : "background:yellowgreen"
     },
     "end" : {
+        type : 'end',
         text : function(x,y) {return "F"},
+        style : "background:pink"
+    },
+    "forbidden" : {
+        type : 'forbidden',
+        text : function(x,y) {return "X"},
         style : "background:pink"
     }
 }
@@ -115,34 +138,40 @@ function init(w,h) {
 }
 
 function hover_level(brick) {
-    draw()
+        draw()
+
     if(gameState === gameStates.play) {
         showPreview(brick)
     }
     
+    
 }
 
 function showPreview(brick) {
+    if(!isFirst) var pathLenth = lastPathLenth;
+        
+    previewPath = makePath(brick, pathLenth)    
     
-        previewPath = makePath(brick, length)    
-        previewPath.forEach(function(preview) {
-            document.getElementById(preview).style = bricks.preview.style
-        })
+    var okPath = isCorrect(previewPath);
+    var style = okPath ? bricks.preview.style : bricks.forbidden.style
+    previewPath.forEach(function(preview) {
+        document.getElementById(preview).style = style
+    })
     
 }
 
 
 function makePath(brick, length) {
     var path = [];
-    var startX = parseInt(level.start.id.split('_')[1])
-    var startY = parseInt(level.start.id.split('_')[2])
+    var startX = parseInt(level.start.split('_')[1])
+    var startY = parseInt(level.start.split('_')[2])
     var x = parseInt(brick.id.split('_')[1])
     var y = parseInt(brick.id.split('_')[2])
     var lg = length || Math.max(Math.abs(x-startX),Math.abs(y-startY))
         
-    var card = getDir(level.start.id, brick.id)
+    var card = getDir(level.start, brick.id)
     if(card) {
-        path = buildPath(card,lg,level.start.id)    
+        path = buildPath(card,lg,level.start)    
     }
     return path
 }
@@ -150,7 +179,7 @@ function makePath(brick, length) {
 function buildPath(cardinal, lenth, start) {
     var paths = []
     
-    for(var i = 0; i < lenth; i += 1) {
+    for(var i = 0; i <= lenth; i += 1) {
         var nextCase = getBrick(start, i, cardinal)
         paths.push(nextCase)
     }
@@ -187,20 +216,23 @@ function getDir(start, current) {
 function getBrick(start, stance, cardinal) {
     var startX = parseInt(start.split("_")[1])
     var startY = parseInt(start.split("_")[2])
+    
     switch(cardinal) {
         case "N":
-            return 'td_'+(startX - stance)+'_'+startY
+            var brickId = 'td_'+(startX - stance)+'_'+startY
             break;
         case "S":
-            return 'td_'+(startX + stance)+'_'+startY
+            var brickId = 'td_'+(startX + stance)+'_'+startY
             break;
         case "E":
-            return 'td_'+(startX)+'_'+(startY + stance)
+            var brickId = 'td_'+(startX)+'_'+(startY + stance)
             break;
         case "W":
-            return 'td_'+(startX)+'_'+(startY-stance)
+            var brickId = 'td_'+(startX)+'_'+(startY-stance)
             break;
     }
+     return brickId
+
 }
 
 function save() {
@@ -210,7 +242,7 @@ function save() {
 function click_level(brick) {
     if(gameState === gameStates.start) {
         level[brick.id] = bricks.start;
-        level.start = brick;
+        level.start = brick.id;
     } 
     if(gameState === gameStates.end) 
         level[brick.id] = bricks.end;level.end = brick
@@ -226,8 +258,26 @@ function click_level(brick) {
 }
 
 
-function isCorrect(path) {
+function isCorrect(paths) {
     var isCorrect = true
+    
+    paths.forEach(function(path) {
+        var box = level[path]
+
+        var px = parseInt(path.split('_')[1])
+        var py = parseInt(path.split('_')[2])
+
+        if(px > LEVEL_WIDTH || py > LEVEL_HEIGHT || px < 0 || py < 0) {
+            isCorrect = false
+        }
+
+        if(box === bricks.trap) {
+            isCorrect = false;
+        }
+            
+            
+        
+    })
     
     return isCorrect;
 }
@@ -236,19 +286,25 @@ function isCorrect(path) {
 function play(brick) {
     if(isFirst) {
         var path = makePath(brick)
+        lastPathLenth = path.length-1;
     } else {
+        console.log(lastPathLenth)
         var path = makePath(brick, lastPathLenth)
     }
     
     if(isCorrect(path)) {
-        level.start = brick
+        level.start = path[path.length - 1]
     }
-        
+    if(isCorrect) {
+         path.forEach(function(box) {
+            level[box] = bricks.path
+        })
+    }
+   
     
-    
+    draw();    
     isFirst = !isFirst;
 }
-
 
 function draw() {
     for(var brickK in level) {
