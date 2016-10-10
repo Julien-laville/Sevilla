@@ -98,7 +98,17 @@ var bricks = {
 }
 
 function setGameState(gm) {
-    gameState = gameStates[gm]
+    if(gameState == gameStates.trigger && gm === 'trigger') {
+        gameState = gameStates.door
+    } else if(gameState == gameStates.door && gm === 'door') {
+        gameState == gameStates.link 
+    } else if(gameState == gameStates.door && gm === 'link') {
+        gameState == gameStates.trigger 
+    } else if(gameState == gameStates.door) {
+        gameState == gameStates.trigger 
+    } else {
+        gameState = gameStates[gm]
+    }
     document.getElementById('editor_status').innerHTML = gameState  
 }
 
@@ -106,18 +116,21 @@ function showSaves() {
     var savesS = []
     for(var lc in localStorage){
         var llc = localStorage[lc]
-        savesS.push(lc)
+        if(lc.indexOf('bob_') != -1) {
+            savesS.push('<span onclick="loadG(\''+lc+'\')">'+lc+'</span>')
+        }
     }
     document.getElementById('saves').innerHTML = savesS.join("<br>")
 }
 
-function load(name) {
-    level = JSON.parse(localStorage.getItem(name)).level
+function loadG(name) {
+    level = JSON.parse(localStorage.getItem(name))
+    draw()
 }
 
-function save() {
-    var levelName = prompt("Level name")
-    
+function saveG() {
+    var levelName = prompt("Level name (a-zA-Z0-9)");
+    localStorage.setItem("bob_"+levelName, JSON.stringify(level))
 }
 
 
@@ -250,6 +263,12 @@ function click_level(brick) {
         level[brick.id] = bricks.trap
     if(gameState === gameStates.water) 
         level[brick.id] = bricks.water
+    if(gameState === gameStates.trigger) 
+        level[brick.id] = bricks.trigger, setGameState('door');
+    if(gameState === gameStates.door) 
+        level[brick.id] = bricks.door
+    if(gameState === gameStates.link) 
+        level[brick.id] = bricks.link
     
     if(gameState === gameStates.play) 
         play(brick)
@@ -261,7 +280,7 @@ function click_level(brick) {
 function isCorrect(paths) {
     var isCorrect = true
     
-    paths.forEach(function(path) {
+    paths.forEach(function(path,i) {
         var box = level[path]
 
         var px = parseInt(path.split('_')[1])
@@ -274,9 +293,11 @@ function isCorrect(paths) {
         if(box === bricks.trap) {
             isCorrect = false;
         }
-            
-            
         
+        if(box === bricks.water && i == paths.length - 1) {
+            isCorrect = false;
+        }
+
     })
     
     return isCorrect;
