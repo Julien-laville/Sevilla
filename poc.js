@@ -219,7 +219,7 @@ function click_level(brick) {
     if(gameState === gameStates.water) 
         level[brick.id] = bricks.water
     
-    if(gameState === gameState.play) 
+    if(gameState === gameStates.play) 
         play(brick)
     
     draw();
@@ -228,8 +228,6 @@ function click_level(brick) {
 
 function isCorrect(path) {
     var isCorrect = true
-    
-    
     
     return isCorrect;
 }
