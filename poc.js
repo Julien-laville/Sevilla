@@ -21,6 +21,7 @@ var gameStates = {
 
 
 var isFirst = false;
+var lastPathLenth = 0;
 var gameState = gameStates.start;
 
 
@@ -122,26 +123,31 @@ function hover_level(brick) {
 }
 
 function showPreview(brick) {
+    
+        previewPath = makePath(brick, length)    
+        previewPath.forEach(function(preview) {
+            document.getElementById(preview).style = bricks.preview.style
+        })
+    
+}
+
+
+function makePath(brick, length) {
+    var path = [];
     var startX = parseInt(level.start.id.split('_')[1])
     var startY = parseInt(level.start.id.split('_')[2])
     var x = parseInt(brick.id.split('_')[1])
     var y = parseInt(brick.id.split('_')[2])
-    var lg = Math.max(Math.abs(x-startX),Math.abs(y-startY))
+    var lg = length || Math.max(Math.abs(x-startX),Math.abs(y-startY))
         
     var card = getDir(level.start.id, brick.id)
-    
-    console.log(card)
-    
     if(card) {
-        previewPath = buildPath(card,lg,level.start.id)    
-        previewPath.forEach(function(preview) {
-            document.getElementById(preview).style = bricks.preview.style
-        })
+        path = buildPath(card,lg,level.start.id)    
     }
-    
+    return path
 }
 
-function buildPath(cardinal, lenth, start   ) {
+function buildPath(cardinal, lenth, start) {
     var paths = []
     
     for(var i = 0; i < lenth; i += 1) {
@@ -202,18 +208,47 @@ function save() {
 }
 
 function click_level(brick) {
-    if(gameState === gameStates.start) level[brick.id] = bricks.start;level.start = brick
-    if(gameState === gameStates.end) level[brick.id] = bricks.end;level.end = brick
-    if(gameState === gameStates.trap) level[brick.id] = bricks.trap
-    if(gameState === gameStates.water) level[brick.id] = bricks.water
+    if(gameState === gameStates.start) {
+        level[brick.id] = bricks.start;
+        level.start = brick;
+    } 
+    if(gameState === gameStates.end) 
+        level[brick.id] = bricks.end;level.end = brick
+    if(gameState === gameStates.trap) 
+        level[brick.id] = bricks.trap
+    if(gameState === gameStates.water) 
+        level[brick.id] = bricks.water
     
-    if(gameState === gameState.play) play(brick)
+    if(gameState === gameState.play) 
+        play(brick)
     
     draw();
 }
 
-function play(brick) {
+
+function isCorrect(path) {
+    var isCorrect = true
     
+    
+    
+    return isCorrect;
+}
+
+
+function play(brick) {
+    if(isFirst) {
+        var path = makePath(brick)
+    } else {
+        var path = makePath(brick, lastPathLenth)
+    }
+    
+    if(isCorrect(path)) {
+        level.start = brick
+    }
+        
+    
+    
+    isFirst = !isFirst;
 }
 
 
