@@ -256,15 +256,15 @@ function click_level(brick) {
         level.start = brick.id;
     } 
     if(gameState === gameStates.end) 
-        level[brick.id] = bricks.end;level.end = brick
+        level[brick.id] = bricks.end,level.end = brick;
     if(gameState === gameStates.trap) 
         level[brick.id] = bricks.trap
     if(gameState === gameStates.water) 
-        level[brick.id] = bricks.water
-    if(gameState === gameStates.trigger) 
-        level[brick.id] = bricks.trigger, setGameState('door'), triggers.push({trigger : brick.id, doors : [], links : []});
+        level[brick.id] = bricks.water;
     if(gameState === gameStates.door) 
         level[brick.id] = bricks.door, addDoor(brick)
+    if(gameState === gameStates.trigger) 
+        level[brick.id] = bricks.trigger,triggers.push({trigger : brick.id, doors : [], links : []}), setGameState('door')
     if(gameState === gameStates.link) 
         level[brick.id] = bricks.link, addLink(brick)
     
@@ -336,9 +336,11 @@ function play(brick) {
 
 function draw() {
     for(var brickK in level) {
-        var brick = level[brickK]
-        document.getElementById(brickK).style = brick.style
-        document.getElementById(brickK).innerHTML = brick.text(brickK.split("_")[1], brickK.split("_")[2])
+        if(brickK.indexOf('td_') == 0) {        
+            var brick = level[brickK]
+            document.getElementById(brickK).style = brick.style
+            document.getElementById(brickK).innerHTML = brick.text(brickK.split("_")[1], brickK.split("_")[2])
+        }
     }
 }
 
