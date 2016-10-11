@@ -1,0 +1,27 @@
+{
+  "name": "kvhost",
+  "version": "1.0.0",
+  "description": "simple key value host with cors configurable",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Julien-laville/Sevilla.git"
+  },
+  "keywords": [
+    "node",
+    "ajax",
+    "server",
+    "key",
+    "value",
+    "cors"
+  ],
+  "author": "julien-laville",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Julien-laville/Sevilla/issues"
+  },
+  "homepage": "https://github.com/Julien-laville/Sevilla#readme"
+}
