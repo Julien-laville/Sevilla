@@ -22,7 +22,7 @@ var gameStates = {
 
 
 
-
+var triggers = []
 var isFirst = true;
 var lastPathLenth = 0;
 var gameState = gameStates.start;
@@ -42,12 +42,12 @@ var bricks = {
     },
     "default" : {
         type : 'default',
-        text : function(x,y) {return x+" , "+y},
+        text : function(x,y) {return x+" "+y},
         style : "background:#ef974d;"
     },
     "trap" : {
         type : 'trap',
-        text : function(x,y) {return x+" , "+y},
+        text : function(x,y) {return x+" "+y},
         style : "background:#a3e1bc;"
     },
     "void" : {
@@ -62,7 +62,7 @@ var bricks = {
     },
     "path" : {
         type : 'path',
-        text : function(x,y) {return x+" , "+y},
+        text : function(x,y) {return x+" "+y},
         style : "background:#8acda2;"
     },
     "door" : {
@@ -73,7 +73,7 @@ var bricks = {
     "trigger" : {
         type : 'trigger',
         text : function(x,y) {return "T"},
-        style : "background:#8acda2;"
+        style : "background:#8acd2a;"
     },
     "link" : {
         type : 'link',
@@ -100,12 +100,10 @@ var bricks = {
 function setGameState(gm) {
     if(gameState == gameStates.trigger && gm === 'trigger') {
         gameState = gameStates.door
-    } else if(gameState == gameStates.door && gm === 'door') {
-        gameState == gameStates.link 
-    } else if(gameState == gameStates.door && gm === 'link') {
-        gameState == gameStates.trigger 
-    } else if(gameState == gameStates.door) {
-        gameState == gameStates.trigger 
+    } else if(gameState == gameStates.door && gm === 'trigger') {
+        gameState = gameStates.link 
+    } else if(gm === 'trigger') {
+        gameState = gameStates.trigger 
     } else {
         gameState = gameStates[gm]
     }
@@ -264,11 +262,11 @@ function click_level(brick) {
     if(gameState === gameStates.water) 
         level[brick.id] = bricks.water
     if(gameState === gameStates.trigger) 
-        level[brick.id] = bricks.trigger, setGameState('door');
+        level[brick.id] = bricks.trigger, setGameState('door'), triggers.push({trigger : brick.id, doors : [], links : []});
     if(gameState === gameStates.door) 
-        level[brick.id] = bricks.door
+        level[brick.id] = bricks.door, addDoor(brick)
     if(gameState === gameStates.link) 
-        level[brick.id] = bricks.link
+        level[brick.id] = bricks.link, addLink(brick)
     
     if(gameState === gameStates.play) 
         play(brick)
@@ -276,6 +274,15 @@ function click_level(brick) {
     draw();
 }
 
+function addDoor(brick) {
+    var trigger = triggers[triggers.length - 1]
+    trigger.doors.push({door : brick, isOpen : false})
+}
+
+function addLink(brick) {
+    var trigger = triggers[triggers.length - 1]
+    trigger.links.push({link : brick, isOpen : false})
+}
 
 function isCorrect(paths) {
     var isCorrect = true
@@ -331,6 +338,7 @@ function draw() {
     for(var brickK in level) {
         var brick = level[brickK]
         document.getElementById(brickK).style = brick.style
+        document.getElementById(brickK).innerHTML = brick.text(brickK.split("_")[1], brickK.split("_")[2])
     }
 }
 
