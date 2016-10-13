@@ -28,7 +28,9 @@ var lastPathLenth = 0;
 var gameState = gameStates.start;
 
 
-var level = {}
+var level = {
+    boxes : {}
+}
 
 function combine() {
     
@@ -138,7 +140,7 @@ function init(w,h) {
     for(var i = 0; i < w; i ++){
         var line = []
         for(var j = 0; j < h; j ++) {
-            level["td_"+i+"_"+j] = bricks.default
+            level.boxes["td_"+i+"_"+j] = bricks.default
             line.push(`<td onmouseover="hover_level(this)" onclick="click_level(this)" id="td_${i}_${j}">${i} ${j}</td>`)
         }
         table += '<tr>'+line.join('\n')+'</tr>'
@@ -250,23 +252,28 @@ function save() {
     draw();
 }
 
+
+
 function click_level(brick) {
     if(gameState === gameStates.start) {
-        level[brick.id] = bricks.start;
+        if(level.boxes[level.start]) {
+            level.boxes[level.start] = bricks.default
+        }
+        level.boxes[brick.id] = bricks.start;
         level.start = brick.id;
     } 
     if(gameState === gameStates.end) 
-        level[brick.id] = bricks.end,level.end = brick;
+        level.boxes[brick.id] = bricks.end,level.end = brick;
     if(gameState === gameStates.trap) 
-        level[brick.id] = bricks.trap
+        level.boxes[brick.id] = bricks.trap
     if(gameState === gameStates.water) 
-        level[brick.id] = bricks.water;
+        level.boxes[brick.id] = bricks.water;
     if(gameState === gameStates.door) 
-        level[brick.id] = bricks.door, addDoor(brick)
+        level.boxes[brick.id] = bricks.door, addDoor(brick)
     if(gameState === gameStates.trigger) 
-        level[brick.id] = bricks.trigger,triggers.push({trigger : brick.id, doors : [], links : []}), setGameState('door')
+        level.boxes[brick.id] = bricks.trigger,triggers.push({isOpen:false,trigger : brick.id, doors : [], links : []}), setGameState('door')
     if(gameState === gameStates.link) 
-        level[brick.id] = bricks.link, addLink(brick)
+        level.boxes[brick.id] = bricks.link, addLink(brick)
     
     if(gameState === gameStates.play) 
         play(brick)
@@ -324,24 +331,63 @@ function play(brick) {
         level.start = path[path.length - 1]
     }
     if(isCorrect) {
-         path.forEach(function(box) {
-            level[box] = bricks.path
+         path.forEach(function(box, i) {
+            
+             level.boxes[box].isPath = true
+                    
+             // trigger
+             if(i == level.boxes.length - 1) {
+                 triggers.forEach(function(trigger) {
+                     if(trigger.trigger === box) {
+                         openTrigger(trigger)
+                     } 
+                 })
+             }
+            
         })
     }
+    
    
     
     draw();    
     isFirst = !isFirst;
 }
 
+function openTrigger(trigger) {
+    trigger.isOpen = true;
+    trigger.doors.forEach(function(door) {
+        door.isOpen = true
+    })
+    
+    trigger.links.forEach(function(link) {
+        link.isOpen = true
+    })
+}
+
 function draw() {
-    for(var brickK in level) {
+    for(var brickK in level.boxes) {
         if(brickK.indexOf('td_') == 0) {        
-            var brick = level[brickK]
+            var brick = level.boxes[brickK]
+            if(brick.type === 'door' || brick.type === 'link' || brick.type === 'trigger')
             document.getElementById(brickK).style = brick.style
+            document.getElementById(brickK).class = 'path'
             document.getElementById(brickK).innerHTML = brick.text(brickK.split("_")[1], brickK.split("_")[2])
         }
     }
+    
+    triggers.forEach(function(trigger) {
+        trigger.doors.forEach(function(door) {
+            document.getElementById(door).style = brick.style
+            document.getElementById(door).innerHTML = brick.text(brickK.split("_")[1], brickK.split("_")[2])
+        }) 
+        
+        trigger.links.forEach(function(link) {
+            document.getElementById(link).style = brick.style
+            document.getElementById(link).innerHTML = brick.text(brickK.split("_")[1], brickK.split("_")[2])
+        }) 
+        document.getElementById(trigger).style = brick.style
+        document.getElementById(trigger).innerHTML = brick.text(brickK.split("_")[1], brickK.split("_")[2])s
+    })
 }
 
 
