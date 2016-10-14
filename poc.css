@@ -35,12 +35,21 @@ TD {
 .trap {
     background:#a3e1bc;
 }
+
+.trap.forbidden {
+    border:red solid 1px;
+}
 .void  {
     background:#fff;
     border:none;
 }
 .water  {
     background:#8acda2;
+}
+
+.water.path {
+    background: #c6bb53;
+    border: #605a23 1px solid;
 }
 .path  {
     background:#8acda2;

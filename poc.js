@@ -125,6 +125,12 @@ function showSaves() {
 
 function loadG(name) {
     level = JSON.parse(localStorage.getItem(name))
+    
+    for(var boxK in level.boxes) {
+        var box = level.boxes[boxK]
+        box.brick.text = bricks[box.brick.type].text 
+    }
+    
     draw()
 }
 
@@ -140,7 +146,8 @@ function init(w,h) {
     for(var i = 0; i < w; i ++){
         var line = []
         for(var j = 0; j < h; j ++) {
-            level.boxes["td_"+i+"_"+j] = bricks.default
+            level.boxes["td_"+i+"_"+j] = {brick : bricks.default, isPath : false, isOpen : false}
+            
             line.push(`<td onmouseover="hover_level(this)" onclick="click_level(this)" id="td_${i}_${j}">${i} ${j}</td>`)
         }
         table += '<tr>'+line.join('\n')+'</tr>'
@@ -255,25 +262,32 @@ function save() {
 
 
 function click_level(brick) {
+    if(level.start === brick.id) {
+        setGameState("play")
+        return;
+    }
+    
     if(gameState === gameStates.start) {
         if(level.boxes[level.start]) {
-            level.boxes[level.start] = bricks.default
+            level.boxes[level.start].brick = bricks.default
         }
-        level.boxes[brick.id] = bricks.start;
+        level.boxes[brick.id].brick = bricks.start;
         level.start = brick.id;
     } 
     if(gameState === gameStates.end) 
-        level.boxes[brick.id] = bricks.end,level.end = brick;
+        level.boxes[brick.id].brick = bricks.end,level.end = brick;
     if(gameState === gameStates.trap) 
-        level.boxes[brick.id] = bricks.trap
+        level.boxes[brick.id].brick = bricks.trap
+    if(gameState === gameStates.void) 
+        level.boxes[brick.id].brick = bricks.void
     if(gameState === gameStates.water) 
-        level.boxes[brick.id] = bricks.water;
+        level.boxes[brick.id].brick = bricks.water;
     if(gameState === gameStates.door) 
-        level.boxes[brick.id] = bricks.door, addDoor(brick)
+        level.boxes[brick.id].brick = bricks.door, addDoor(brick)
     if(gameState === gameStates.trigger) 
-        level.boxes[brick.id] = bricks.trigger,triggers.push({isOpen:false,trigger : brick.id, doors : [], links : []}), setGameState('door')
+        level.boxes[brick.id].brick = bricks.trigger,triggers.push({isOpen:false,trigger : brick.id, doors : [], links : []}), setGameState('door')
     if(gameState === gameStates.link) 
-        level.boxes[brick.id] = bricks.link, addLink(brick)
+        level.boxes[brick.id].brick = bricks.link, addLink(brick)
     
     if(gameState === gameStates.play) 
         play(brick)
@@ -295,20 +309,26 @@ function isCorrect(paths) {
     var isCorrect = true
     
     paths.forEach(function(path,i) {
-        var box = level[path]
 
-        var px = parseInt(path.split('_')[1])
         var py = parseInt(path.split('_')[2])
+        var px = parseInt(path.split('_')[1])
 
-        if(px > LEVEL_WIDTH || py > LEVEL_HEIGHT || px < 0 || py < 0) {
+        if(px >= LEVEL_WIDTH  || py >= LEVEL_HEIGHT || px < 0 || py < 0) {
             isCorrect = false
+            return;
         }
+        var box = level.boxes[path].brick
 
-        if(box === bricks.trap) {
+        if(box.type === bricks.trap.type) {
             isCorrect = false;
         }
-        
-        if(box === bricks.water && i == paths.length - 1) {
+        if(box.type === bricks.void.type) {
+            isCorrect = false;
+        }
+        if(box.type === bricks.water.type && isFirst) {
+            isCorrect = false
+        }
+        if(box.type === bricks.water.type && i == paths.length - 1 && isFirst) {
             isCorrect = false;
         }
 
@@ -323,14 +343,13 @@ function play(brick) {
         var path = makePath(brick)
         lastPathLenth = path.length-1;
     } else {
-        console.log(lastPathLenth)
         var path = makePath(brick, lastPathLenth)
     }
     
-    if(isCorrect(path)) {
+    var isPathCorrect = isCorrect(path)
+    
+    if(isPathCorrect) {
         level.start = path[path.length - 1]
-    }
-    if(isCorrect) {
          path.forEach(function(box, i) {
             
              level.boxes[box].isPath = true
@@ -345,12 +364,11 @@ function play(brick) {
              }
             
         })
+        isFirst = !isFirst;
+
     }
-    
-   
-    
+
     draw();    
-    isFirst = !isFirst;
 }
 
 function openTrigger(trigger) {
@@ -368,10 +386,10 @@ function draw() {
     for(var brickK in level.boxes) {
         if(brickK.indexOf('td_') == 0) {        
             var brick = level.boxes[brickK]
-            if(brick.type === 'door' || brick.type === 'link' || brick.type === 'trigger')
+//            if(brick.type === 'door' || brick.type === 'link' || brick.type === 'trigger')
 //            document.getElementById(brickK).style = brick.style 
-            document.getElementById(brickK).className = brick.type + 
-            document.getElementById(brickK).innerHTML = brick.text(brickK.split("_")[1], brickK.split("_")[2])
+            document.getElementById(brickK).className = brick.brick.type + (brick.isPath ? ' path' : '')  
+            document.getElementById(brickK).innerHTML = brick.brick.text(brickK.split("_")[1], brickK.split("_")[2])
         }
     }
     
