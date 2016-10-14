@@ -166,9 +166,9 @@ function showPreview(brick) {
     previewPath = makePath(brick, pathLenth)    
     
     var okPath = isCorrect(previewPath);
-    var style = okPath ? bricks.preview.style : bricks.forbidden.style
+    var className = okPath ? bricks.preview.type : bricks.forbidden.type
     previewPath.forEach(function(preview) {
-        document.getElementById(preview).style = style
+        document.getElementById(preview).classList.add(className)
     })
     
 }
@@ -369,8 +369,8 @@ function draw() {
         if(brickK.indexOf('td_') == 0) {        
             var brick = level.boxes[brickK]
             if(brick.type === 'door' || brick.type === 'link' || brick.type === 'trigger')
-            document.getElementById(brickK).style = brick.style
-            document.getElementById(brickK).class = 'path'
+//            document.getElementById(brickK).style = brick.style 
+            document.getElementById(brickK).className = brick.type + 
             document.getElementById(brickK).innerHTML = brick.text(brickK.split("_")[1], brickK.split("_")[2])
         }
     }
@@ -386,7 +386,7 @@ function draw() {
             document.getElementById(link).innerHTML = brick.text(brickK.split("_")[1], brickK.split("_")[2])
         }) 
         document.getElementById(trigger).style = brick.style
-        document.getElementById(trigger).innerHTML = brick.text(brickK.split("_")[1], brickK.split("_")[2])s
+        document.getElementById(trigger).innerHTML = brick.text(brickK.split("_")[1], brickK.split("_")[2])
     })
 }
 

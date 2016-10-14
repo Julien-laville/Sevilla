@@ -18,3 +18,49 @@ TD {
     font-size : 12px;
     text-align: center
 }
+
+
+.preview {
+    background:#222426;
+}
+
+.default  {
+    background:#ef974d;
+}
+
+.default.preview {
+    background: #222426
+}
+
+.trap {
+    background:#a3e1bc;
+}
+.void  {
+    background:#fff;
+    border:none;
+}
+.water  {
+    background:#8acda2;
+}
+.path  {
+    background:#8acda2;
+}
+.door  {
+    background:#8acda2;
+}
+.trigger  {
+    background:#8acd2a;
+}
+.link  {
+    background:#8acda2;
+}
+.start  {
+    background:yellowgreen
+}
+.end {
+    background:pink
+}
+.forbidden  {
+    background:pink
+}
+
