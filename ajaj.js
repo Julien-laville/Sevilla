@@ -1,5 +1,5 @@
 function getAll() {
-    new XMLHttpRequest()
+    var req = new XMLHttpRequest()
 
     req.open('GET', "2a01:cb1d:2f5:bd00:416b:68d2:681d:10a2", true);
     req.onreadystatechange = function (aEvt) {
