@@ -356,6 +356,9 @@ function play(brick) {
                     
              // trigger
              if(i == level.boxes.length - 1) {
+                 if(level.boxes[box].brick.type == bricks.end.type) {
+                     alert("Fin")
+                 }
                  triggers.forEach(function(trigger) {
                      if(trigger.trigger === box) {
                          openTrigger(trigger)
