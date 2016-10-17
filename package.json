@@ -8,5 +8,11 @@
   "scripts": {
     "start": "node nano-host/index.js",
     "test": "node nano-host/tests/index.js"
+  },
+  "author": "julien-laville",
+  "license": "MIT",
+  "dependencies": {
+    "request": "2.75.0",
+    "sqlite3": "3.1.6"
   }
 }
