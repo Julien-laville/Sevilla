@@ -1,0 +1,12 @@
+{
+  "name": "sevilla",
+  "description": "a really cool app",
+  "version": "1.0.0",
+  "engines": {
+    "node": "4.6.0"
+  },
+  "scripts": {
+    "start": "node nano-host/index.js",
+    "test": "node nano-host/tests/index.js"
+  }
+}
