@@ -9,7 +9,7 @@ var dbPath = path.join(__dirname, "kvs.db")
 var nanoServ = http.createServer(function (req, res) {
     var reqUrl = url.parse(req.url, true)
 
-    res.setHeader('Access-Control-Allow-Headers', 'julien-laville.github.io');
+    res.setHeader('Access-Control-Allow-Headers', 'localhost');
 
     if(req.method === 'POST') {
         put(res, req)
