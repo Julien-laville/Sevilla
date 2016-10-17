@@ -35,7 +35,7 @@ function getAll(res) {
             res.writeHead('500');
             res.end('<h1><center>500</center></h1>' + error.toString())
         } else {
-            allValues = rows.map(function(r){return {k : r.key, v : r.value}})
+            allValues = rows.map(function(r){return {key : r.key, value : r.value}})
             res.end(JSON.stringify(allValues))
         }
         dbkv.close()

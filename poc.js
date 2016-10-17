@@ -114,29 +114,39 @@ function setGameState(gm) {
 
 function showSaves() {
     var savesS = []
-    for(var lc in localStorage){
-        var llc = localStorage[lc]
-        if(lc.indexOf('bob_') != -1) {
-            savesS.push('<span onclick="loadG(\''+lc+'\')">'+lc+'</span>')
-        }
-    }
-    document.getElementById('saves').innerHTML = savesS.join("<br>")
+    getAll(function(err, allSaves) {
+        if(err) {console.error('error while loading map'); return;}
+
+        allSaves.forEach(function(allSave){
+            if(allSave.key.indexOf('sm_') != -1) {
+                savesS.push('<span onclick="loadG(\''+allSave.key+'\')">'+allSave.key+'</span>')
+            }
+        })
+        document.getElementById('saves').innerHTML = savesS.join("<br>")
+    })
 }
 
 function loadG(name) {
-    level = JSON.parse(localStorage.getItem(name))
-    
-    for(var boxK in level.boxes) {
-        var box = level.boxes[boxK]
-        box.brick.text = bricks[box.brick.type].text 
-    }
-    
-    draw()
+    get(name, function(save) {
+
+        for(var boxK in save.boxes) {
+            var box = save.boxes[boxK]
+            box.brick.text = bricks[box.brick.type].text
+        }
+        draw()
+    })
+
 }
 
 function saveG() {
     var levelName = prompt("Level name (a-zA-Z0-9)");
-    localStorage.setItem("bob_"+levelName, JSON.stringify(level))
+    set("sm_"+levelName, JSON.stringify(level), function(err) {
+        if(err) {
+            console.error("Error on save")
+        } else {
+            console.log("Save ok.")
+        }
+    })
 }
 
 
