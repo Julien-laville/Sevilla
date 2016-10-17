@@ -9,7 +9,7 @@ var dbPath = path.join(__dirname, "kvs.db")
 var nanoServ = http.createServer(function (req, res) {
     var reqUrl = url.parse(req.url, true)
 
-    res.setHeader('Access-Control-Allow-Headers', 'localhost');
+    res.setHeader('Access-Control-Allow-Headers', 'http://localhost:8081');
 
     if(req.method === 'POST') {
         put(res, req)
