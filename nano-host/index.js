@@ -10,9 +10,9 @@ var nanoServ = http.createServer(function (req, res) {
     res.setHeader('Access-Control-Allow-Headers', 'julien-laville.github.io');
 
     if(reqUrl.path === '/') {
-        showAll(res)
+        getAll(res)
     } else if(reqUrl.query.id) {
-        show(res,reqUrl.query.id)
+        get(res,reqUrl.query.id)
     } else if(reqUrl.path === '/delete') {
         cleanAll(res)
     } else {
@@ -23,31 +23,38 @@ var nanoServ = http.createServer(function (req, res) {
 })
 
 
-function showAll(res) {
+function getAll(res) {
     var allValues = [];
     var dbkv = new sqlite3.Database('nano-host/kvs.db');
-        dbkv.all("SELECT * from key_values", function (error, rows) {
-            if(error) {
-                res.writeHead('500');
-                res.end('<h1><center>500</center></h1>' + error.toString())
-            } else {
-                allValues = rows.map(function(r){return {k : r.key, v : r.value}})
-                res.end(JSON.stringify(allValues))
-            }
-            dbkv.close()
-        })
-
-
-
-
+    dbkv.all("SELECT * from key_values", function (error, rows) {
+        if(error) {
+            res.writeHead('500');
+            res.end('<h1><center>500</center></h1>' + error.toString())
+        } else {
+            allValues = rows.map(function(r){return {k : r.key, v : r.value}})
+            res.end(JSON.stringify(allValues))
+        }
+        dbkv.close()
+    })
 
 }
 
 function cleanAll(res) {
+   dbkv.exec("DELETE from key_values", function(error) {
+       if(error) {
+            res.writeHead('500');
+            res.end('<h1><center>500</center></h1>' + error.toString())
+        } else {
+            res.end(JSON.stringify({status : 'success'}))
+        }
+   }) 
+}
+
+function get(res, id) {
     
 }
 
-function show(res, id) {
+function put(res, key, value) {
     
 }
 
