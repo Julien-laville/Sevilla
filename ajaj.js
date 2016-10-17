@@ -1,7 +1,7 @@
 function getAll(cb) {
     var req = new XMLHttpRequest()
 
-    req.open('GET', "http://nanokv.herokuapp.com/", true);
+    req.open('GET', "https://nanokv.herokuapp.com/", true);
     req.onreadystatechange = function (aEvt) {
         if (req.readyState == 4) {
             if(req.status == 200) {
@@ -18,7 +18,7 @@ function getAll(cb) {
 function get(k,cb) {
     var req = new XMLHttpRequest()
 
-    req.open('GET', "http://nanokv.herokuapp.com/?id=" + k, true);
+    req.open('GET', "https://nanokv.herokuapp.com/?id=" + k, true);
     req.onreadystatechange = function (aEvt) {
         if (req.readyState == 4) {
             if(req.status == 200) {
@@ -35,7 +35,7 @@ function get(k,cb) {
 function set(k,v,cb) {
     var req = new XMLHttpRequest();
 
-    req.open('POST', "http://nanokv.herokuapp.com/", true);
+    req.open('POST', "https://nanokv.herokuapp.com/", true);
     req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 
     var params = "key=" + k + "&value=" + v;

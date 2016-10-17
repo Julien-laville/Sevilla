@@ -405,6 +405,7 @@ function draw() {
     for(var brickK in level.boxes) {
         if(brickK.indexOf('td_') == 0) {        
             var brick = level.boxes[brickK]
+
             document.getElementById(brickK).className = brick.brick.type + (brick.isPath ? ' path' : '')  
             document.getElementById(brickK).innerHTML = brick.brick.text(brickK.split("_")[1], brickK.split("_")[2])
         }
