@@ -22,7 +22,7 @@ function get(k,cb) {
     req.onreadystatechange = function (aEvt) {
         if (req.readyState == 4) {
             if(req.status == 200) {
-                cb(null,JSON.parse(req))
+                cb(null,JSON.parse(req.response))
             } else {
                 cb("An error occurred")
             }
@@ -35,15 +35,15 @@ function get(k,cb) {
 function set(k,v,cb) {
     var req = new XMLHttpRequest();
 
-    req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     req.open('POST', "http://nanokv.herokuapp.com/", true);
+    req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 
-    var params = "key=" + k + "&name=" + v;
+    var params = "key=" + k + "&value=" + v;
 
     req.onreadystatechange = function (aEvt) {
         if (req.readyState == 4) {
             if(req.status == 200) {
-                cb(JSON.parse(null, req))
+                cb(null,JSON.parse(req))
             } else {
                cb("An error occurred")
             }

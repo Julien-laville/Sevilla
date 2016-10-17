@@ -40,8 +40,8 @@ TD {
     border:red solid 1px;
 }
 .void  {
-    background:#fff;
-    border:none;
+    background:#333537;
+    border:#333537;
 }
 .water  {
     background:#8acda2;

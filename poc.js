@@ -127,8 +127,14 @@ function showSaves() {
 }
 
 function loadG(name) {
-    get(name, function(save) {
+    get(name, function(err,save) {
+        if(err) {
+            console.error('error while loading map');
+            return;
+        }
+        save = JSON.parse(save.value)
 
+        level = save;
         for(var boxK in save.boxes) {
             var box = save.boxes[boxK]
             box.brick.text = bricks[box.brick.type].text
@@ -399,8 +405,6 @@ function draw() {
     for(var brickK in level.boxes) {
         if(brickK.indexOf('td_') == 0) {        
             var brick = level.boxes[brickK]
-//            if(brick.type === 'door' || brick.type === 'link' || brick.type === 'trigger')
-//            document.getElementById(brickK).style = brick.style 
             document.getElementById(brickK).className = brick.brick.type + (brick.isPath ? ' path' : '')  
             document.getElementById(brickK).innerHTML = brick.brick.text(brickK.split("_")[1], brickK.split("_")[2])
         }
