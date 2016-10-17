@@ -25,11 +25,11 @@ var nanoServ = http.createServer(function (req, res) {
 
 function showAll(res) {
     var allValues = [];
-    var dbkv = new sqlite3.Database('kvs.db');
+    var dbkv = new sqlite3.Database('nano-host/kvs.db');
         dbkv.all("SELECT * from key_values", function (error, rows) {
             if(error) {
                 res.writeHead('500');
-                res.end('<h1><center>500</center></h1>')
+                res.end('<h1><center>500</center></h1>' + error.toString())
             } else {
                 allValues = rows.map(function(r){return {k : r.key, v : r.value}})
                 res.end(JSON.stringify(allValues))
