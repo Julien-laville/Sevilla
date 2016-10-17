@@ -51,5 +51,5 @@ function show(res, id) {
     
 }
 
-
-nanoServ.listen(8083)
+var port = process.env.PORT || 8080
+nanoServ.listen(port)
