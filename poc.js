@@ -30,7 +30,8 @@ var gameState = gameStates.start;
 
 
 var level = {
-    boxes : {}
+    boxes : {},
+    teleporters : []
 }
 
 function combine() {
@@ -88,7 +89,7 @@ var bricks = {
     },
     "teleport" : {
         type : 'teleport',
-        text : function(x,y) {return "X"}
+        text : function(x,y) {return "O"}
     }
 }
 
@@ -167,8 +168,7 @@ function init(w,h) {
 }
 
 function hover_level(brick) {
-        draw()
-
+    draw()
     if(gameState === gameStates.play) {
         showPreview(brick)
     }
@@ -307,7 +307,7 @@ function click_level(brick) {
 }
 
 function addTeleport(brick) {
-
+    teleporters.push({brick : brick})
 }
 
 function addDoor(brick) {
