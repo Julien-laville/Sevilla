@@ -412,15 +412,16 @@ function draw() {
     
     triggers.forEach(function(trigger) {
         trigger.doors.forEach(function(door) {
-            document.getElementById(door).style = brick.style
+            document.getElementById(door).className = brick.type
             document.getElementById(door).innerHTML = brick.text(brickK.split("_")[1], brickK.split("_")[2])
         }) 
         
         trigger.links.forEach(function(link) {
-            document.getElementById(link).style = brick.style
+            document.getElementById(link).className = brick.type
             document.getElementById(link).innerHTML = brick.text(brickK.split("_")[1], brickK.split("_")[2])
         }) 
-        document.getElementById(trigger).style = brick.style
+        
+        document.getElementById(trigger).className = brick.type
         document.getElementById(trigger).innerHTML = brick.text(brickK.split("_")[1], brickK.split("_")[2])
     })
 }
