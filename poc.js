@@ -17,6 +17,7 @@ var gameStates = {
     "door" : "DOOR",
     "link" : "LINK",
     "water" : "WATER",
+    "teleport" : "TELEPORT",
     "play" : "PLAY"
 }
 
@@ -39,63 +40,55 @@ function combine() {
 var bricks = {
     "preview" : {
         type : 'preview',
-        text : ".",
-        style : "background:#222426;"
+        text : function() {return " . "}
     },
     "default" : {
         type : 'default',
-        text : function(x,y) {return x+" "+y},
-        style : "background:#ef974d;"
+        text : function(x,y) {return x+" "+y}
     },
     "trap" : {
         type : 'trap',
-        text : function(x,y) {return x+" "+y},
-        style : "background:#a3e1bc;"
+        text : function(x,y) {return x+" "+y}
     },
     "void" : {
         type : 'void',
-        text : function(x,y) {return ''},
-        style : "background:#fff;border:none;"
+        text : function(x,y) {return ''}
     },
     "water" : {
         type : 'water',
-        text : function(x,y) {return ''},
-        style : "background:#8acda2;"
+        text : function(x,y) {return ''}
     },
     "path" : {
         type : 'path',
-        text : function(x,y) {return x+" "+y},
-        style : "background:#8acda2;"
+        text : function(x,y) {return x+" "+y}
     },
     "door" : {
         type : 'door',
-        text : function(x,y) {return "D"},
-        style : "background:#8acda2;"
+        text : function(x,y) {return "D"}
     },
     "trigger" : {
         type : 'trigger',
-        text : function(x,y) {return "T"},
-        style : "background:#8acd2a;"
+        text : function(x,y) {return "T"}
     },
     "link" : {
         type : 'link',
-        text : function(x,y) {return "."},
-        style : "background:#8acda2;"
+        text : function(x,y) {return "."}
     },
     "start" : {
         type : 'start',
-        text : function(x,y) {return "S"},
-        style : "background:yellowgreen"
+        text : function(x,y) {return "S"}
     },
     "end" : {
         type : 'end',
-        text : function(x,y) {return "F"},
-        style : "background:pink"
+        text : function(x,y) {return "F"}
     },
     "forbidden" : {
         type : 'forbidden',
-        text : function(x,y) {return "X"},
-        style : "background:pink"
+        text : function(x,y) {return "X"}
+    },
+    "teleport" : {
+        type : 'teleport',
+        text : function(x,y) {return "X"}
     }
 }
 
@@ -304,11 +297,17 @@ function click_level(brick) {
         level.boxes[brick.id].brick = bricks.trigger,triggers.push({isOpen:false,trigger : brick.id, doors : [], links : []}), setGameState('door')
     if(gameState === gameStates.link) 
         level.boxes[brick.id].brick = bricks.link, addLink(brick)
+    if(gameState === gameStates.teleport)
+        level.boxes[brick.id].brick = bricks.teleport, addTeleport(brick)
     
     if(gameState === gameStates.play) 
         play(brick)
     
     draw();
+}
+
+function addTeleport(brick) {
+
 }
 
 function addDoor(brick) {
