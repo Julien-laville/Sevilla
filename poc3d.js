@@ -60,16 +60,23 @@ function loadMap(scene) {
 }
 
 function animate() {
-
     requestAnimationFrame( animate );
     
     draw()
     
     renderer.render( scene, camera );
-
 }
 
 
 function draw(scene) {
     
+}
+
+
+
+
+function loadMap(cb) {
+    get('test', function(map) {
+        
+    })
 }
