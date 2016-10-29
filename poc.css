@@ -46,7 +46,9 @@ TD {
 .water  {
     background:#8acda2;
 }
-
+.wall  {
+    background: #e9e73e;
+}
 .teleport  {
     background:#262cd6;
 }
@@ -75,6 +77,6 @@ TD {
     background:pink
 }
 .forbidden  {
-    background:pink
+    background: #7dd6ff
 }
 

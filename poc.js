@@ -17,6 +17,7 @@ var gameStates = {
     "door" : "DOOR",
     "link" : "LINK",
     "water" : "WATER",
+    "wall" : "WALL",
     "teleport" : "TELEPORT",
     "play" : "PLAY"
 }
@@ -53,6 +54,10 @@ var bricks = {
     },
     "void" : {
         type : 'void',
+        text : function(x,y) {return ''}
+    },
+    "wall" : {
+        type : 'wall',
         text : function(x,y) {return ''}
     },
     "water" : {
@@ -156,7 +161,7 @@ function init(w,h) {
     for(var i = 0; i < w; i ++){
         var line = []
         for(var j = 0; j < h; j ++) {
-            level.boxes["td_"+i+"_"+j] = {brick : bricks.default, isPath : false, isOpen : false}
+            level.boxes["td_"+i+"_"+j] = {brick : bricks.default, isPath : false, isOpen : false, x : i, y : j}
             
             line.push(`<td onmouseover="hover_level(this)" onclick="click_level(this)" id="td_${i}_${j}">${i} ${j}</td>`)
         }
@@ -291,6 +296,8 @@ function click_level(brick) {
         level.boxes[brick.id].brick = bricks.void
     if(gameState === gameStates.water) 
         level.boxes[brick.id].brick = bricks.water;
+    if(gameState === gameStates.wall)
+        level.boxes[brick.id].brick = bricks.wall;
     if(gameState === gameStates.door) 
         level.boxes[brick.id].brick = bricks.door, addDoor(brick)
     if(gameState === gameStates.trigger) 
